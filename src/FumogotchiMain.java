@@ -8,8 +8,8 @@ public class FumogotchiMain {
     double hunger, happiness, health, energy;
     ImageIcon green = new ImageIcon("assets/green.png");
     JPanel timerPanel = new JPanel();
-    JPanel lock;
-    JLabel hitbox;
+    JPanel itemList;
+    JLabel moneyBox, banner, lock;
 
     Image image = Toolkit.getDefaultToolkit().createImage("src/assets/green.png");
     ImageIcon imageIcon = new ImageIcon(image);
@@ -17,39 +17,60 @@ public class FumogotchiMain {
     Image energyIm = Toolkit.getDefaultToolkit().createImage("src/assets/biceps.png");
     //ImageIcon energyIc = new ImageIcon(energyIm);
     Image happinessIm = Toolkit.getDefaultToolkit().createImage("src/assets/drama-masks.png");
-    //ImageIcon happinesIc = new ImageIcon(happinessIm);
+    //ImageIcon happinessIc = new ImageIcon(happinessIm);
     Image hungerIm = Toolkit.getDefaultToolkit().createImage("src/assets/full-pizza.png");
     //ImageIcon hungerIc = new ImageIcon(hungerIm);
     Image healthIm = Toolkit.getDefaultToolkit().createImage("src/assets/heart-plus.png");
     //ImageIcon healthIc = new ImageIcon(healthIm);
+    Image lockIm = Toolkit.getDefaultToolkit().createImage("src/assets/lock.png");
 
 
 
     Timer timer;
     Handler handler = new Handler();
     JFrame window, shopFrame;
-    JButton button1, button2, button3, button4;
+    MyButton button1, button2, button3, button4;
 
     public static void main(String[] args) {
         new FumogotchiMain();
     }
 
     public FumogotchiMain(){
-        hunger = 100;
-        money = 99999;
-        createUI();
+        //firstWindow();
+        gameLoop();
     }
 
-    public void createUI(){
+    public void firstWindow(){
+        JFrame frame = new JFrame("Fumogotchi Settings");
+        frame.setSize(480, 848);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(null);
+        frame.setVisible(true);
+
+        JPanel panel = new JPanel();
+        panel.setBounds(0,0,478,846);
+        panel.setBackground(Color.green);
+        panel.setToolTipText("ssss");
+        frame.add(panel);
+    }
+
+    public int gameLoop(){
+        Character player = createAllCharacters(0);
+        hunger = player.getHungerMax();
+        happiness = player.getHappinessMax();
+        health = player.getHealthMax();
+        energy = player.getEnergyMax();
+        money = 99999;
         window = new JFrame("Fumogotchi " + System.currentTimeMillis());
         window.setSize(480, 848);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // window.getContentPane().setBackground(Color.black);
         window.setLayout(null);
 
-        lock = new JPanel();
+        lock = new JLabel();
         lock.setBounds(0,0,480,848);
-        lock.setBackground(Color.black);
+        //lock.setBackground(Color.black);
+        ImageIcon lockIc = new ImageIcon(lockIm);
+        lock.setIcon(lockIc);
         window.add(lock);
         lock.setVisible(false);
 
@@ -62,11 +83,6 @@ public class FumogotchiMain {
         timerPanel.setBackground(Color.green);
         timerPanel.setLayout(new GridLayout(2,1));
 
-        hitbox = new JLabel(String.valueOf(hunger));
-        hitbox.setBackground(Color.pink);
-
-        timerPanel.add(hitbox);
-
         hungerIm = hungerIm.getScaledInstance(50,50,Image.SCALE_DEFAULT);
         ImageIcon hungerIc = new ImageIcon(hungerIm);
         JLabel hungerB = new JLabel();
@@ -74,7 +90,6 @@ public class FumogotchiMain {
         hungerB.setBounds(75+20,0,100,100);
         window.add(hungerB);
         JLabel hungerBox = new JLabel();
-        hungerBox.setBounds(100,100, 10,(int)hunger);
         hungerBox.setBackground(Color.green);
         hungerBox.setIcon(imageIcon);
         window.add(hungerBox);
@@ -87,7 +102,6 @@ public class FumogotchiMain {
         happinessB.setBounds(150+20,0,100,100);
         window.add(happinessB);
         JLabel happinessBox = new JLabel();
-        happinessBox.setBounds(100,100, 10,(int)hunger);
         happinessBox.setBackground(Color.green);
         happinessBox.setIcon(imageIcon);
         window.add(happinessBox);
@@ -100,7 +114,6 @@ public class FumogotchiMain {
         healthB.setBounds(225+20,0,100,100);
         window.add(healthB);
         JLabel healthBox = new JLabel();
-        healthBox.setBounds(100,100, 10,(int)hunger);
         healthBox.setBackground(Color.green);
         healthBox.setIcon(imageIcon);
         window.add(healthBox);
@@ -113,7 +126,6 @@ public class FumogotchiMain {
         energyB.setBounds(300+20,0,100,100);
         window.add(energyB);
         JLabel energyBox = new JLabel();
-        energyBox.setBounds(100,100, 10,(int)hunger);
         energyBox.setBackground(Color.green);
         energyBox.setIcon(imageIcon);
         window.add(energyBox);
@@ -126,34 +138,38 @@ public class FumogotchiMain {
         lowerUI.setLayout(new GridLayout(1,4));
         window.add(lowerUI);
 
-        button1 = new JButton("shop");
-        button1.addActionListener(handler);
-        button1.setActionCommand("shop");
-        button2 = new JButton();
-        button2.addActionListener(handler);
-        button2.setActionCommand("b2");
-        button3 = new JButton();
-        button3.addActionListener(handler);
-        button3.setActionCommand("b3");
-        button4 = new JButton();
-        button4.addActionListener(handler);
-        button4.setActionCommand("b4");
-        lowerUI.add(button1);
-        lowerUI.add(button2);
-        lowerUI.add(button3);
-        lowerUI.add(button4);
+        button1 = new MyButton("", "shop", handler);
+        button2 = new MyButton("", "b2", handler);
+        button3 = new MyButton("", "b3", handler);
+        button4 = new MyButton("", "b4", handler);
+
+        lowerUI.add(button1.getButton());
+        lowerUI.add(button2.getButton());
+        lowerUI.add(button3.getButton());
+        lowerUI.add(button4.getButton());
 
         window.setVisible(true);
 
         shopFrame = new JFrame("Fumogotchi shop ^v^");
         shopFrame.setSize(480,848);
         shopFrame.setLayout(null);
-        JLabel banner = new JLabel("Food Shop");
+        moneyBox = new JLabel(String.valueOf(money));
+        moneyBox.setBounds(10,10,50,10);
+        shopFrame.add(moneyBox);
+        banner = new JLabel("Food Shop");
         banner.setBackground(Color.blue);
         banner.setIcon(green);
         banner.setBounds(0,0,480,200);
         shopFrame.add(banner);
-        JPanel itemList = new JPanel();
+        JButton mainButton1 = new JButton("Открой магазин");
+        mainButton1.setBounds(200,600,50,50);
+        mainButton1.setActionCommand("change to shop");
+        mainButton1.addActionListener(handler);
+        JButton mainButton2 = new JButton("Открой баннер");
+        mainButton2.setBounds(250,400,50,50);
+        mainButton2.setActionCommand("change to banner");
+        mainButton2.addActionListener(handler);
+        itemList = new JPanel();
         itemList.setLayout(new GridLayout(5,2));
         itemList.setBackground(Color.black);
         itemList.setBounds(40,100,400,400);
@@ -179,25 +195,11 @@ public class FumogotchiMain {
         itemList.add(item9);
         itemList.add(item10);
         itemList.add(item11);
-
+        itemList.setVisible(false);
+        banner.setVisible(false);
         shopFrame.add(itemList);
-        /*
-        JButton panel1 = new JButton();
-        panel1.setBounds(100,100,100,100);
-        panel1.setBackground(Color.red);
-        shopFrame.add(panel1);
-        JPanel panel2 = new JPanel();
-        panel2.setBounds(200,200,100,100);
-        panel2.setBackground(Color.yellow);
-        shopFrame.add(panel2);
-        JPanel panel3 = new JPanel();
-
-        panel3.setBackground(Color.magenta);
-        shopFrame.add(panel3);
-        JPanel panel4 = new JPanel();
-        panel4.setBackground(Color.red);
-        shopFrame.add(panel4);
-         */
+        shopFrame.add(mainButton1);
+        shopFrame.add(mainButton2);
         shopFrame.setVisible(false);
 
         timer = new Timer(1000, new ActionListener() {
@@ -205,32 +207,51 @@ public class FumogotchiMain {
             public void actionPerformed(ActionEvent e) {
                 if(shopFrame.isVisible()){lockMenu();}
                 else {unlockMenu();}
+                moneyBox.setText(String.valueOf(money));
+                hunger -= player.getHungerVel();
+                if (hunger > player.getHungerMax()) {hunger = player.getHungerMax(); }
+                else if (hunger < 0) { hunger = 0; }
+                hungerB.setToolTipText(String.valueOf(hunger)  + " / " + String.valueOf(player.getHungerMax()));
 
-                hunger = hunger - 5;
-                hitbox.setText(String.valueOf(hunger));
-                hungerBox.setBounds(75+20,100-(int)hunger, 50,(int)hunger);
-                happinessBox.setBounds(150+20,100-(int)hunger, 50,(int)hunger);
-                healthBox.setBounds(225+20,100-(int)hunger, 50,(int)hunger);
-                energyBox.setBounds(300+20,100-(int)hunger, 50,(int)hunger);
+                happiness -= player.getHappinessVel();
+                if (happiness > player.getHappinessMax()) {happiness = player.getHappinessMax(); }
+                else if (happiness < 0) { happiness = 0; }
+                happinessB.setToolTipText(String.valueOf(happiness)  + " / " + String.valueOf(player.getHappinessMax()));
+
+                health -= player.getHealthVel();
+                if (health > player.getHealthMax()) {health = player.getHealthMax(); }
+                else if (health < 0) { health = 0; }
+                healthB.setToolTipText(String.valueOf(health)  + " / " + String.valueOf(player.getHealthMax()));
+
+                energy -= player.getEnergyVel();
+                if (energy > player.getEnergyMax()) {energy = player.getEnergyMax(); }
+                else if (energy < 0) { energy = 0; }
+                energyB.setToolTipText(String.valueOf(energy)  + " / " + String.valueOf(player.getEnergyMax()));
+
+                hungerBox.setBounds(75+20, (int) (100-Math.round(hunger/player.getHungerMax()*100)), 50, (int) Math.round(hunger/player.getHungerMax()*100));
+                happinessBox.setBounds(150+20,(int) (100-Math.round(happiness/player.getHappinessMax()*100)), 50,(int) Math.round(happiness/player.getHappinessMax()*100));
+                healthBox.setBounds(225+20,(int) (100-Math.round(health/player.getHealthMax()*100)), 50,(int) Math.round(health/player.getHealthMax()*100));
+                energyBox.setBounds(300+20,(int) (100-Math.round(energy/player.getEnergyMax()*100)), 50,(int) Math.round(energy/player.getEnergyMax()*100));
             }
         });
         timer.start();
         window.add(upperUI);
+        return 0;
     }
 
     public void lockMenu(){
-        button1.setEnabled(false);
-        button2.setEnabled(false);
-        button3.setEnabled(false);
-        button4.setEnabled(false);
+        button1.getButton().setEnabled(false);
+        button2.getButton().setEnabled(false);
+        button3.getButton().setEnabled(false);
+        button4.getButton().setEnabled(false);
         lock.setVisible(true);
     }
 
     public void unlockMenu(){
-        button1.setEnabled(true);
-        button2.setEnabled(true);
-        button3.setEnabled(true);
-        button4.setEnabled(true);
+        button1.getButton().setEnabled(true);
+        button2.getButton().setEnabled(true);
+        button3.getButton().setEnabled(true);
+        button4.getButton().setEnabled(true);
         lock.setVisible(false);
     }
     public void shopMenu(){
@@ -247,7 +268,41 @@ public class FumogotchiMain {
                 case "shop":
                     shopMenu();
                     break;
+                case "change to shop":
+                    itemList.setVisible(true);
+                    banner.setVisible(false);
+                    break;
+                case "change to banner":
+                    itemList.setVisible(false);
+                    banner.setVisible(true);
+                    money-=100;
+                    break;
             }
+        }
+    }
+    public Character createAllCharacters(int choice) {
+        switch (choice){
+            case 0: //default to debugging
+                return new Character(75,
+                        100,
+                        100,
+                        100,
+                        5,
+                        1,
+                        0.25,
+                        1,
+                        "");
+            default:
+                return new Character(125,
+                        100,
+                        125,
+                        100,
+                        1,
+                        1,
+                        1,
+                        1,
+                        "");
+
         }
     }
 }
